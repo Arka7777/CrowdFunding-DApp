@@ -2,6 +2,14 @@
 pragma solidity 0.8.26;
 
 contract crowdFunding{
+    address public oowner;
+    constructor (){
+        oowner=msg.sender;
+    }
+
+    function getOwner() public view returns (address){
+        return oowner;
+    }
     struct Campaign{
         address owner;
         string title;

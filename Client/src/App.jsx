@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import MyCampaigns from './components/MyCampaigns'
 import CreateCampaign from './components/CreateCampaign'
 import Home from './components/Home'
+// import CampaignDetails from './components/CampaignDetails';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/create" element={<CreateCampaign />} />
         <Route path="/my-campaigns" element={<MyCampaigns/>} />
+        {/* <Route path="/campaign/:id" element={<CampaignDetails />} /> */}
       </Routes>
     </div>
     </>
