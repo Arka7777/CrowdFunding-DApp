@@ -113,7 +113,7 @@ const Home = () => {
                     to="/explore"
                     className="bg-white text-indigo-600 px-8 py-4 rounded-xl font-semibold text-lg lg:text-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition"
                   >
-                    Explore Projects <FiArrowRight />
+                    Explore Campaigns <FiArrowRight />
                   </Link>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -306,7 +306,7 @@ const Home = () => {
                   to="/explore"
                   className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 hover:bg-white/5 transition"
                 >
-                  Explore Projects
+                  Explore Campaigns
                 </Link>
               </motion.div>
             </div>
