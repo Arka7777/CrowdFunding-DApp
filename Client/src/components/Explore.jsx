@@ -29,23 +29,46 @@ export default function Explore() {
     setPreviewCampaign(null);
   };
 
-  // Get connected wallet address
+  // Get connected wallet address and listen for account changes
   useEffect(() => {
     const getConnectedAddress = async () => {
       if (window.ethereum) {
         try {
-          const provider = new BrowserProvider(window.ethereum);
-          const signer = await provider.getSigner();
-          const address = await signer.getAddress();
-          setConnectedAddress(address);
+          // Request account access if needed
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts.length > 0) {
+            const provider = new BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            const address = await signer.getAddress();
+            setConnectedAddress(address);
+          } else {
+            console.log("No accounts found. User is not connected.");
+          }
+          // Add event listener for account changes
+          window.ethereum.on('accountsChanged', async (accounts) => {
+            if (accounts.length > 0) {
+              const provider = new BrowserProvider(window.ethereum);
+              const signer = await provider.getSigner();
+              const address = await signer.getAddress();
+              setConnectedAddress(address);
+            } else {
+              setConnectedAddress('');
+            }
+          });
         } catch (error) {
           console.error("Error connecting wallet:", error);
-          toast.error("Failed to connect wallet. Please make sure MetaMask is installed and unlocked.");
         }
+      } else {
+        console.log("Please install MetaMask!");
       }
     };
-
     getConnectedAddress();
+    // Cleanup function to remove event listeners
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', () => {});
+      }
+    };
   }, []);
 
   // Fetch campaigns
@@ -121,31 +144,57 @@ export default function Explore() {
         toast.error("Please enter a valid donation amount.");
         return;
       }
-  
+      // Check if MetaMask is installed
+      if (!window.ethereum) {
+        toast.error("Please install MetaMask to make a donation.");
+        return;
+      }
+      // Ensure user is connected to MetaMask
+      if (!connectedAddress) {
+        toast.error("Please connect your wallet first.");
+        try {
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const provider = new BrowserProvider(window.ethereum);
+          const signer = await provider.getSigner();
+          const address = await signer.getAddress();
+          setConnectedAddress(address);
+        } catch (error) {
+          console.error("Error connecting wallet:", error);
+          toast.error("Failed to connect wallet.");
+          return;
+        }
+      }
       const parsedAmount = parseEther(donationAmount);
-  
       if (contract) {
         toast.info("Processing your donation...", { autoClose: false, toastId: "donation-processing" });
-        
-        const tx = await contract.donateCampaign(campaignId, {
-          value: parsedAmount,
-        });
-  
-        toast.update("donation-processing", { 
-          render: "Transaction submitted. Waiting for confirmation...",
-          autoClose: false
-        });
-        
-        await tx.wait();
-        
-        toast.dismiss("donation-processing");
-        toast.success(`You donated Ξ${donationAmount} successfully!`);
-        
-        closeDonationModal();
-  
-        // Refresh campaigns
-        const updatedCampaigns = await contract.getCampaigns();
-        setCampaigns(updatedCampaigns);
+        try {
+          // This is where the MetaMask should be triggered
+          const tx = await contract.donateCampaign(campaignId, {
+            value: parsedAmount,
+          });
+          toast.update("donation-processing", { 
+            render: "Transaction submitted. Waiting for confirmation...",
+            autoClose: false
+          });
+          await tx.wait();
+          toast.dismiss("donation-processing");
+          toast.success(`You donated Ξ${donationAmount} successfully!`);
+          closeDonationModal();
+          // Refresh campaigns
+          const updatedCampaigns = await contract.getCampaigns();
+          setCampaigns(updatedCampaigns);
+        } catch (error) {
+          // This catches if the user rejects the transaction in MetaMask
+          console.error("Donation transaction error:", error);
+          toast.dismiss("donation-processing");
+          if (error.code === 4001) {
+            toast.error("Transaction was rejected by user.");
+          } else {
+            toast.error("Something went wrong with the transaction. Please try again.");
+          }
+        }
+      } else {
+        toast.error("Contract not initialized. Please refresh the page and try again.");
       }
     } catch (error) {
       console.error("Donation failed:", error);
@@ -255,7 +304,7 @@ export default function Explore() {
             return (
               <div
                 key={index}
-                className="group bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-lg hover:border-indigo-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 cursor-pointer"
+                className="group bg-gradient-to-br from-white to-blue-100 rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-lg hover:border-indigo-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1 cursor-pointer"
                 onClick={() => openPreviewModal(campaign)}
               >
                 <div className="relative overflow-hidden h-60">
@@ -383,7 +432,7 @@ export default function Explore() {
           <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
             {/* Modal content */}
             <div 
-              className="bg-white rounded-2xl shadow-xl max-w-md w-full mx-auto transform transition-all animate-fade-in-up"
+              className="bg-gradient-to-br from-white to-blue-100 rounded-2xl shadow-xl max-w-md w-full mx-auto transform transition-all animate-fade-in-up"
               onClick={e => e.stopPropagation()}
               role="dialog"
               aria-modal="true"
@@ -510,7 +559,7 @@ export default function Explore() {
           <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
             {/* Modal content */}
             <div 
-              className="bg-white rounded-2xl shadow-xl max-w-3xl w-full mx-auto transform transition-all animate-fade-in-up"
+              className="bg-gradient-to-br from-white to-blue-100 rounded-2xl shadow-xl max-w-3xl w-full mx-auto transform transition-all animate-fade-in-up"
               onClick={e => e.stopPropagation()}
               role="dialog"
               aria-modal="true"

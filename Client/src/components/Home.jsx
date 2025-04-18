@@ -306,7 +306,7 @@ const Home = () => {
                   to="/explore"
                   className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 hover:bg-white/5 transition"
                 >
-                  Browse Projects
+                  Explore Projects
                 </Link>
               </motion.div>
             </div>

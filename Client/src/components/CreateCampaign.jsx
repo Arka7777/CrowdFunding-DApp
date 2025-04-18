@@ -71,7 +71,7 @@ const CreateCampaign = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
       <Toaster position="top-center" toastOptions={{ duration: 5000 }} />
-      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-xl flex flex-col md:flex-row overflow-hidden">
+      <div className="w-full max-w-6xl bg-gradient-to-br from-white to-blue-100 rounded-2xl shadow-xl flex flex-col md:flex-row overflow-hidden">
         
         {/* Left Side Image with Animated Gradient Background */}
         <div className="md:w-1/2 relative overflow-hidden">
