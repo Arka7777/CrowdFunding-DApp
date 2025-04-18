@@ -114,7 +114,7 @@ export default function MyCampaigns() {
             return (
               <div
                 key={index}
-                className="group bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-lg hover:border-indigo-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+                className="group bg-gradient-to-br from-white to-blue-100 rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-lg hover:border-indigo-100 transition-all duration-300 ease-in-out transform hover:-translate-y-1"
               >
                 <div className="relative overflow-hidden h-60">
                   <img
