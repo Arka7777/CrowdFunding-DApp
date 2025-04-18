@@ -8,9 +8,9 @@ import { ContractProvider } from "./context/contractContext.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-    <ContractProvider> 
-        <App />
-      </ContractProvider>
+        <ContractProvider> 
+          <App />
+        </ContractProvider>
     </BrowserRouter>
   </StrictMode>
 );
